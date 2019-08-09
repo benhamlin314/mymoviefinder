@@ -9,6 +9,14 @@ CREATE TABLE title_basics(
    runtime int NOT NULL
 );
 
+
+CREATE TABLE title_genre(
+   titleId varchar(255),
+   genre varchar(255),
+   FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
+   PRIMARY KEY (titleId, genre)
+);
+
 CREATE TABLE title_akas(
    titleId varchar(255),
    ordering int,
@@ -21,25 +29,11 @@ CREATE TABLE title_akas(
    PRIMARY KEY (titleId, ordering)
 );
 
-CREATE TABLE title_types(
-   titleId varchar(255),
-   type varchar(255),
-   FOREIGN KEY (titleId) REFERENCES title_akas(titleId),
-   PRIMARY KEY (titleId, type)
-);
-
 CREATE TABLE title_attributes(
    titleId varchar(255),
    attribute varchar(255),
    FOREIGN KEY (titleId) REFERENCES title_akas(titleId),
    PRIMARY KEY (titleId, attribute)
-);
-
-CREATE TABLE title_genre(
-   titleId varchar(255),
-   genre varchar(255),
-   FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
-   PRIMARY KEY (titleId, genre)
 );
 
 CREATE TABLE crew_names(
@@ -110,7 +104,13 @@ CREATE TABLE user_info(
    titleId varchar(255),
    owned BOOLEAN NOT NULL,
    lastWatched DATE,
-   ownedFormat varchar(255) NOT NULL,
-   FOREIGN KEY (titleId) REFERENCES title_basics(titleId)
+   ownedFormat int,
+   FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
+   FOREIGN KEY (ownedFormat) REFERENCES format(fid),
    PRIMARY KEY (titleId)
+);
+
+CREATE TABLE format(
+   fid int PRIMARY KEY,
+   format varchar(255) NOT NULL
 );
