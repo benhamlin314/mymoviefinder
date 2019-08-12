@@ -9,7 +9,6 @@ CREATE TABLE title_basics(
    runtime int NOT NULL
 );
 
-
 CREATE TABLE title_genre(
    titleId varchar(255),
    genre varchar(255),
