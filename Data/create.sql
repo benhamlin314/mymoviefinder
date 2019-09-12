@@ -1,12 +1,12 @@
 CREATE TABLE title_basics(
    titleId varchar(255) PRIMARY KEY,
    titleType varchar(255),
-   primaryTitle varchar(255) NOT NULL,
-   originalTitle varchar(255) NOT NULL,
+   primaryTitle text NOT NULL,
+   originalTitle text NOT NULL,
    isAdult BOOLEAN NOT NULL,
-   startYear SMALLINT NOT NULL CHECK (birthYear<=9999 AND birthYear>1800),
-   endYear SMALLINT NOT NULL CHECK (birthYear<=9999 AND birthYear>1800),
-   runtime int NOT NULL
+   startYear SMALLINT CHECK (startYear<=9999 AND startYear>1800),
+   endYear SMALLINT CHECK (endYear<=9999 AND endYear>1800),
+   runtime int
 );
 
 CREATE TABLE title_genre(
@@ -17,29 +17,29 @@ CREATE TABLE title_genre(
 );
 
 CREATE TABLE title_akas(
-   titleId varchar(255),
+   titleId varchar(255) UNIQUE,
    ordering int,
-   title varchar(255) NOT NULL,
+   title text NOT NULL,
    region varchar(255),
    language varchar(255),
-   attributesId varchar(255) NOT NULL,
-   isOriginalTitle BOOLEAN NOT NULL,
+   isOriginalTitle BOOLEAN,
    FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
    PRIMARY KEY (titleId, ordering)
 );
 
 CREATE TABLE title_attributes(
    titleId varchar(255),
+   ordering int,
    attribute varchar(255),
-   FOREIGN KEY (titleId) REFERENCES title_akas(titleId),
-   PRIMARY KEY (titleId, attribute)
+   FOREIGN KEY (titleId, ordering) REFERENCES title_akas(titleId, ordering),
+   PRIMARY KEY (titleId, ordering)
 );
 
 CREATE TABLE crew_names(
    nameId varchar(255) PRIMARY KEY,
    name varchar(255),
    birthYear SMALLINT NOT NULL CHECK (birthYear<=9999 AND birthYear>1800),
-   deathYear SMALLINT CHECK (birthYear<=9999 AND birthYear>1800)
+   deathYear SMALLINT CHECK (deathYear<=9999 AND deathYear>1800)
 );
 
 CREATE TABLE crew_professions(
@@ -69,7 +69,7 @@ CREATE TABLE title_writers(
    titleId varchar(255),
    writer varchar(255),
    FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
-   FOREIGN KEY (director) REFERENCES crew_names(nameId),
+   FOREIGN KEY (writer) REFERENCES crew_names(nameId),
    PRIMARY KEY (titleId, writer)
 );
 
@@ -96,20 +96,20 @@ CREATE TABLE title_principals(
 CREATE TABLE title_ratings(
    titleId varchar(255),
    averageRating float,
-   numVotes int NOT NULL DEFAULT 0
-);
-
-CREATE TABLE user_info(
-   titleId varchar(255),
-   owned BOOLEAN NOT NULL,
-   lastWatched DATE,
-   ownedFormat int,
-   FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
-   FOREIGN KEY (ownedFormat) REFERENCES format(fid),
-   PRIMARY KEY (titleId)
+   numVotes int DEFAULT 0
 );
 
 CREATE TABLE format(
    fid int PRIMARY KEY,
    format varchar(255) NOT NULL
+);
+
+CREATE TABLE user_info(
+   titleId varchar(255),
+   owned BOOLEAN DEFAULT FALSE,
+   lastWatched DATE,
+   ownedFormat int,
+   FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
+   FOREIGN KEY (ownedFormat) REFERENCES format(fid),
+   PRIMARY KEY (titleId)
 );
