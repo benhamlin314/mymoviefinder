@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace MyMovieFinder
 {
-    public partial class Form1 : Form
+    public partial class My_Movie_Finder : Form
     {
-        public Form1()
+        public My_Movie_Finder()
         {
             InitializeComponent();
         }

@@ -6,6 +6,9 @@
 # IMDb files
 *.tsv
 
+# Error log for parser
+errorlog.txt
+
 # User-specific files
 *.suo
 *.user
