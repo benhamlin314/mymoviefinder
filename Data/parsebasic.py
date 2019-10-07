@@ -3,16 +3,22 @@
 import psycopg2
 import csv
 
-# read title.basics.tsv
-# parsed data to be inputted to title_basics, title_genre tables
-# this parser must run first due to dependencies in the database
 
-def main():
+
+def parsebasic(connstr):
+    """
+    reads title.basics.tsv
+    parsed data to be inputted to title_basics, title_genre tables
+    this parser must run first due to dependencies in the database
+
+    :param connstr: string for postgres database connection
+    :return: array containing every titleId inputted
+    """
     with open("title.basics.tsv/data.tsv", "rt", newline='', encoding='utf-8') as file:
         # open database connection to postgres database
-        # TODO: make user and password user input allowing for more personalization
+        basics = set()
         try:
-            conn = psycopg2.connect("dbname=mymoviefinder_db user=postgres password=1234")
+            conn = psycopg2.connect(connstr)
             cur = conn.cursor()
         except:
             print("failed to connect to mymoviefinder_db please try again...")
@@ -84,21 +90,29 @@ def main():
                                 VALUES (%s, %s);
                                 """,
                                 (row['tconst'], genre))
-                        print(row['tconst'])
+                    print("parsebasic at %s" %(row['tconst']))
+                    basics.add(row['tconst'])
             except Exception as e:
                 # prints id of failed input
-                print("input failed at %s" %(row['tconst']))
+                print("input failed at %s in parsebasic" %(row['tconst']))
                 # prints dictionary entry of input
                 print(row)
                 # prints error encountered
                 print(e)
                 flag = True
+                with open("errorlog.txt", "a") as log:
+                    log.write("Input failed at %s in parsebasic" %(id))
+                    log.write(str(row))
+                    log.write(str(e))
             finally:
                 # commits and closes connections to database
+
                 if not flag:
                     conn.commit()
-                cur.close()
-                conn.close()
-
-if __name__ == '__main__':
-    main()
+                    cur.close()
+                    conn.close()
+                    return basics
+                else:
+                    cur.close()
+                    conn.close()
+                    return None

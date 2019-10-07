@@ -17,7 +17,7 @@ CREATE TABLE title_genre(
 );
 
 CREATE TABLE title_akas(
-   titleId varchar(255) UNIQUE,
+   titleId varchar(255),
    ordering int,
    title text NOT NULL,
    region varchar(255),
@@ -30,16 +30,17 @@ CREATE TABLE title_akas(
 CREATE TABLE title_attributes(
    titleId varchar(255),
    ordering int,
+   attId int,
    attribute varchar(255),
    FOREIGN KEY (titleId, ordering) REFERENCES title_akas(titleId, ordering),
-   PRIMARY KEY (titleId, ordering)
+   PRIMARY KEY (titleId, ordering, attId)
 );
 
 CREATE TABLE crew_names(
    nameId varchar(255) PRIMARY KEY,
    name varchar(255),
-   birthYear SMALLINT NOT NULL CHECK (birthYear<=9999 AND birthYear>1800),
-   deathYear SMALLINT CHECK (deathYear<=9999 AND deathYear>1800)
+   birthYear SMALLINT,
+   deathYear SMALLINT
 );
 
 CREATE TABLE crew_professions(
@@ -74,11 +75,14 @@ CREATE TABLE title_writers(
 );
 
 CREATE TABLE title_episodes(
+   episodeId varchar(255),
    titleId varchar(255),
-   seasonNumber int CHECK(seasonNumber>0) NOT NULL,
-   episodeNumber int CHECK(episodeNumber>0) NOT NULL,
+   parentId varchar(255),
+   seasonNumber int,
+   episodeNumber int,
    FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
-   PRIMARY KEY (titleId, episodeNumber)
+   FOREIGN KEY (parentId) REFERENCES title_basics(titleId),
+   PRIMARY KEY (episodeId)
 );
 
 CREATE TABLE title_principals(
@@ -87,10 +91,19 @@ CREATE TABLE title_principals(
    nameId varchar(255),
    category varchar(255),
    job varchar(255),
-   characters varchar(255),
    FOREIGN KEY (titleId) REFERENCES title_basics(titleId),
    FOREIGN KEY (nameId) REFERENCES crew_names(nameId),
-   PRIMARY KEY (titleId, ordering)
+   PRIMARY KEY (titleId, ordering, nameId)
+);
+
+CREATE TABLE title_characters(
+   titleId varchar(255),
+   ordering int,
+   nameId varchar(255),
+   charId int,
+   character_name varchar(255),
+   FOREIGN KEY (titleId, ordering, nameId) REFERENCES title_principals(titleId, ordering, nameId),
+   PRIMARY KEY (titleId, ordering, nameId, charId)
 );
 
 CREATE TABLE title_ratings(
